@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './UserInfo.module.css'
+import styles from './UserInfo.module.css';
 
 const UserInfo = () => {
     const [users, setUsers] = useState([]);
@@ -8,8 +8,17 @@ const UserInfo = () => {
     const [pastSearches, setPastSearches] = useState([]);
 
     useEffect(() => {
+        const storedPastSearches = localStorage.getItem('pastSearches');
+        if (storedPastSearches) {
+            setPastSearches(JSON.parse(storedPastSearches));
+        }
+
         getUsers();
     }, []);
+
+    const savePastSearchesToLocalStorage = (searches) => {
+        localStorage.setItem('pastSearches', JSON.stringify(searches));
+    };
 
     const getUsers = async () => {
         try {
@@ -26,10 +35,22 @@ const UserInfo = () => {
         const filteredUsers = users.filter((user) =>
             user.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        setSortedUsers(filteredUsers);
-        setPastSearches((prevSearches) => [...prevSearches, searchTerm]);
+
+        if (searchTerm === '') {
+            setSortedUsers(users);
+        } else {
+            // Show filtered users
+            setSortedUsers(filteredUsers);
+
+            const updatedPastSearches = [...pastSearches];
+            if (!updatedPastSearches.includes(searchTerm)) {
+                updatedPastSearches.push(searchTerm);
+            }
+            setPastSearches(updatedPastSearches);
+            savePastSearchesToLocalStorage(updatedPastSearches);
+        }
+
         setSearchTerm('');
-        
     };
 
     const handleSortByName = () => {
