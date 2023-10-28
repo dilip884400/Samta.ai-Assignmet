@@ -39,7 +39,6 @@ const UserInfo = () => {
         if (searchTerm === '') {
             setSortedUsers(users);
         } else {
-            // Show filtered users
             setSortedUsers(filteredUsers);
 
             const updatedPastSearches = [...pastSearches];
